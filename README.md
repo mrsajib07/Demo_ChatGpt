@@ -1,1 +1,1 @@
-This Only ChatGpt Demo
+This is only ChatGpt Demo
