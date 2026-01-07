@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My own ChatGpt</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            height: 100vh;
+            overflow: hidden;
+        }
+        .sidebar {
+            width: 260px;
+            height: 100vh;
+            background-color: #f8f9fa;
+            border-right: 1px solid #dee2e6;
+        }
+        .chat-area {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+        .chat-input {
+            padding: 2rem;
+            background-color: #fff;
+            border-top: 1px solid #dee2e6;
+        }
+        .nav-link {
+            color: #212529;
+            padding: 0.5rem 1rem;
+            margin: 0.2rem 0;
+        }
+        .nav-link:hover {
+            background-color: #e9ecef;
+            border-radius: 0.375rem;
+        }
+        .input-group-text {
+            background-color: #fff;
+        }
+        .message {
+            max-width: 80%;
+            margin: 1rem 0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+        .user-message {
+            background-color: #f8f9fa;
+            margin-left: auto;
+        }
+        .bot-message {
+            background-color: #e9ecef;
+            margin-right: auto;
+        }
+        .typing-indicator {
+            display: none;
+            margin-bottom: 1rem;
+        }
+        .typing-indicator span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: #6c757d;
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: typing 1s infinite;
+        }
+        @keyframes typing {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div class="sidebar p-3">
+            <div class="d-flex align-items-center mb-4">
+                <h5 class="mb-0">ChatGPT</h5>
+            </div>
+            <button class="btn btn-light w-100 mb-3 text-start">
+                <i class="bi bi-plus-lg me-2"></i> New chat
+            </button>
+            <div class="nav flex-column">
+                <div class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-chat-left me-2"></i>
+                        ChatGPT
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-pencil me-2"></i>
+                        Write For Me
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-image me-2"></i>
+                        Image Generator
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Chat Area -->
+        <div class="chat-area flex-grow-1">
+            <div class="chat-messages text-center" id="chatMessages">
+                <div class="mt-5">
+                    <h2>What can I help with?</h2>
+                </div>
+                <div class="typing-indicator" id="typingIndicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+            <div class="chat-input">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-12 col-lg-8">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="userInput" placeholder="Ask anything" onkeypress="handleKeyPress(event)">
+                                <button class="btn btn-outline-secondary" type="button">
+                                    <i class="bi bi-mic-fill"></i>
+                                </button>
+                                <button class="btn btn-primary" type="button" onclick="sendMessage()">Send</button>
+                            </div>
+                            <div class="text-center mt-2">
+                                <small class="text-muted">ChatGPT can make mistakes. Check important info.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const chatMessages = document.getElementById('chatMessages');
+        const userInput = document.getElementById('userInput');
+        const typingIndicator = document.getElementById('typingIndicator');
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function sendMessage() {
+            const message = userInput.value.trim();
+            if (message === '') return;
+
+            // Add user message
+            addMessage(message, 'user');
+            userInput.value = '';
+
+            // Show typing indicator
+            typingIndicator.style.display = 'block';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Simulate bot response after a delay
+            setTimeout(() => {
+                typingIndicator.style.display = 'none';
+                const responses = [
+                    "I understand your question. Let me help you with that.",
+                    "That's an interesting question! Here's what I think...",
+                    "Based on my knowledge, I can tell you that...",
+                    "Here's what I found about your query...",
+                    "Let me explain this in detail..."
+                ];
+                const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                addMessage(randomResponse, 'bot');
+            }, 1500);
+        }
+
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', sender === 'user' ? 'user-message' : 'bot-message');
+            messageDiv.textContent = text;
+            
+            // Remove the initial welcome message if it exists
+            if (chatMessages.querySelector('h2')) {
+                chatMessages.innerHTML = '';
+            }
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    </script>
+</body>
+</html> 
